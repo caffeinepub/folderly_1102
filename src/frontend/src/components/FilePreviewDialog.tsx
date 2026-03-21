@@ -88,7 +88,7 @@ export function FilePreviewDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={`${isImage ? "sm:max-w-3xl" : "sm:max-w-2xl"} max-h-[90vh] flex flex-col`}
+        className={`w-[95vw] ${isImage ? "sm:max-w-3xl" : "sm:max-w-2xl"} max-h-[90vh] flex flex-col`}
       >
         <DialogHeader>
           <DialogTitle className="truncate pr-8">{file?.name}</DialogTitle>
@@ -145,7 +145,7 @@ export function FilePreviewDialog({
                 <img
                   src={previewUrl}
                   alt={file?.name}
-                  className="max-w-full max-h-[50vh] object-contain rounded"
+                  className="max-w-full max-h-[35vh] sm:max-h-[50vh] object-contain rounded"
                 />
               </div>
             ) : textContent ? (

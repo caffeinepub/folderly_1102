@@ -43,7 +43,7 @@ export function ProfileSetupDialog({ open }: ProfileSetupDialogProps) {
       <DialogContent showCloseButton={false} className="sm:max-w-md">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Welcome to Folderly!</DialogTitle>
+            <DialogTitle>Welcome to ICcloud!</DialogTitle>
             <DialogDescription>
               Let's set up your profile. Enter your name to get started.
             </DialogDescription>

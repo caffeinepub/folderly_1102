@@ -90,9 +90,9 @@ function LandingPage({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <div className="blob-1 absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full blur-3xl" />
-        <div className="blob-2 absolute -top-16 right-0 w-[420px] h-[420px] rounded-full blur-3xl" />
-        <div className="blob-3 absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full blur-3xl" />
+        <div className="blob-1 absolute -top-32 -left-32 w-[min(500px,85vw)] h-[min(500px,85vw)] rounded-full blur-3xl" />
+        <div className="blob-2 absolute -top-16 right-0 w-[min(420px,75vw)] h-[min(420px,75vw)] rounded-full blur-3xl" />
+        <div className="blob-3 absolute bottom-0 left-1/2 -translate-x-1/2 w-[min(600px,90vw)] h-[min(400px,60vw)] rounded-full blur-3xl" />
       </div>
 
       {/* Navbar */}
@@ -357,8 +357,8 @@ function AuthenticatedApp() {
           <Header userName={profile.name} />
           <main className="flex-1 p-4">
             {/* Toolbar */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="relative flex-1 sm:max-w-md">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <div className="relative w-full sm:flex-1 sm:max-w-md">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type="text"
@@ -492,7 +492,7 @@ function AuthenticatedApp() {
               </div>
             )}
 
-            <div className="mb-4">
+            <div className="mb-4 overflow-x-auto">
               <Breadcrumb path={folderPath} onNavigate={handleNavigate} />
             </div>
 
