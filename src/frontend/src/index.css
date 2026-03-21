@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/assets/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+:root {
+  --background: oklch(99% 0 0);
+  --foreground: oklch(15% 0.02 260);
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(15% 0.02 260);
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(15% 0.02 260);
+  --primary: oklch(55% 0.22 262);
+  --primary-foreground: oklch(100% 0 0);
+  --secondary: oklch(96% 0.01 262);
+  --secondary-foreground: oklch(30% 0.04 262);
+  --muted: oklch(97% 0.005 262);
+  --muted-foreground: oklch(55% 0.03 262);
+  --accent: oklch(94% 0.04 295);
+  --accent-foreground: oklch(45% 0.2 295);
+  --destructive: oklch(55% 0.22 27);
+  --destructive-foreground: oklch(100% 0 0);
+  --border: oklch(92% 0.01 262);
+  --input: oklch(92% 0.01 262);
+  --ring: oklch(55% 0.22 262);
+  --chart-1: oklch(55% 0.22 262);
+  --chart-2: oklch(55% 0.2 295);
+  --chart-3: oklch(65% 0.18 200);
+  --chart-4: oklch(60% 0.2 170);
+  --chart-5: oklch(70% 0.15 150);
+  --sidebar: oklch(97% 0.005 262);
+  --sidebar-foreground: oklch(30% 0.04 262);
+  --sidebar-primary: oklch(55% 0.22 262);
+  --sidebar-primary-foreground: oklch(100% 0 0);
+  --sidebar-accent: oklch(92% 0.01 262);
+  --sidebar-accent-foreground: oklch(55% 0.22 262);
+  --sidebar-border: oklch(92% 0.01 262);
+  --sidebar-ring: oklch(55% 0.22 262);
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 1px 4px 0px oklch(0% 0 0 / 0.04);
+  --shadow-xs: 0px 2px 8px 0px oklch(0% 0 0 / 0.06);
+  --shadow-sm: 0px 2px 12px 0px oklch(0% 0 0 / 0.08), 0px 1px 2px -1px
+    oklch(0% 0 0 / 0.04);
+  --shadow: 0px 4px 16px 0px oklch(0% 0 0 / 0.08), 0px 1px 3px -1px
+    oklch(0% 0 0 / 0.04);
+  --shadow-md: 0px 4px 24px 0px oklch(0% 0 0 / 0.1), 0px 2px 4px -1px
+    oklch(0% 0 0 / 0.05);
+  --shadow-lg: 0px 8px 32px 0px oklch(0% 0 0 / 0.1), 0px 4px 8px -2px
+    oklch(0% 0 0 / 0.06);
+  --shadow-xl: 0px 12px 48px 0px oklch(0% 0 0 / 0.12), 0px 6px 12px -2px
+    oklch(0% 0 0 / 0.06);
+  --shadow-2xl: 0px 24px 64px 0px oklch(0% 0 0 / 0.16);
+  --tracking-normal: -0.015em;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: oklch(12% 0.02 262);
+  --foreground: oklch(96% 0.005 262);
+  --card: oklch(16% 0.025 262);
+  --card-foreground: oklch(96% 0.005 262);
+  --popover: oklch(16% 0.025 262);
+  --popover-foreground: oklch(96% 0.005 262);
+  --primary: oklch(65% 0.22 262);
+  --primary-foreground: oklch(100% 0 0);
+  --secondary: oklch(20% 0.03 262);
+  --secondary-foreground: oklch(90% 0.01 262);
+  --muted: oklch(20% 0.03 262);
+  --muted-foreground: oklch(60% 0.04 262);
+  --accent: oklch(22% 0.05 295);
+  --accent-foreground: oklch(75% 0.18 295);
+  --destructive: oklch(55% 0.22 27);
+  --destructive-foreground: oklch(100% 0 0);
+  --border: oklch(22% 0.03 262);
+  --input: oklch(22% 0.03 262);
+  --ring: oklch(65% 0.22 262);
+  --chart-1: oklch(65% 0.22 262);
+  --chart-2: oklch(65% 0.2 295);
+  --chart-3: oklch(70% 0.18 200);
+  --chart-4: oklch(65% 0.2 170);
+  --chart-5: oklch(72% 0.15 150);
+  --sidebar: oklch(12% 0.02 262);
+  --sidebar-foreground: oklch(90% 0.01 262);
+  --sidebar-primary: oklch(65% 0.22 262);
+  --sidebar-primary-foreground: oklch(100% 0 0);
+  --sidebar-accent: oklch(20% 0.03 262);
+  --sidebar-accent-foreground: oklch(65% 0.22 262);
+  --sidebar-border: oklch(22% 0.03 262);
+  --sidebar-ring: oklch(65% 0.22 262);
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 1px 4px 0px oklch(0% 0 0 / 0.2);
+  --shadow-xs: 0px 2px 8px 0px oklch(0% 0 0 / 0.25);
+  --shadow-sm: 0px 2px 12px 0px oklch(0% 0 0 / 0.3), 0px 1px 2px -1px
+    oklch(0% 0 0 / 0.2);
+  --shadow: 0px 4px 16px 0px oklch(0% 0 0 / 0.3), 0px 1px 3px -1px
+    oklch(0% 0 0 / 0.2);
+  --shadow-md: 0px 4px 24px 0px oklch(0% 0 0 / 0.35), 0px 2px 4px -1px
+    oklch(0% 0 0 / 0.2);
+  --shadow-lg: 0px 8px 32px 0px oklch(0% 0 0 / 0.4), 0px 4px 8px -2px
+    oklch(0% 0 0 / 0.25);
+  --shadow-xl: 0px 12px 48px 0px oklch(0% 0 0 / 0.45), 0px 6px 12px -2px
+    oklch(0% 0 0 / 0.25);
+  --shadow-2xl: 0px 24px 64px 0px oklch(0% 0 0 / 0.6);
+}
+
+body {
+  letter-spacing: var(--tracking-normal);
+}
+
+/* Landing page gradient blobs */
+.blob-1 {
+  background: radial-gradient(
+    circle,
+    oklch(72% 0.2 262 / 0.18),
+    transparent 70%
+  );
+}
+.blob-2 {
+  background: radial-gradient(
+    circle,
+    oklch(72% 0.22 310 / 0.15),
+    transparent 70%
+  );
+}
+.blob-3 {
+  background: radial-gradient(
+    circle,
+    oklch(80% 0.18 195 / 0.12),
+    transparent 70%
+  );
+}
+
+/* Gradient text utility */
+.text-gradient-cloud {
+  background: linear-gradient(
+    135deg,
+    oklch(52% 0.24 260),
+    oklch(60% 0.25 300),
+    oklch(65% 0.2 220)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
