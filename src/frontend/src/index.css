@@ -126,7 +126,7 @@ body {
   letter-spacing: var(--tracking-normal);
 }
 
-/* Landing page gradient blobs */
+/* Legacy light landing blobs (kept for compatibility) */
 .blob-1 {
   background: radial-gradient(
     circle,
@@ -153,11 +153,96 @@ body {
 .text-gradient-cloud {
   background: linear-gradient(
     135deg,
-    oklch(52% 0.24 260),
-    oklch(60% 0.25 300),
-    oklch(65% 0.2 220)
+    oklch(70% 0.22 220),
+    oklch(72% 0.26 270),
+    oklch(72% 0.24 310)
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Dark landing page */
+.landing-dark {
+  background-color: oklch(8% 0.025 260);
+  color: oklch(92% 0.01 260);
+}
+
+.landing-dot-grid {
+  background-image: radial-gradient(
+    circle,
+    oklch(40% 0.04 260 / 0.35) 1px,
+    transparent 1px
+  );
+  background-size: 32px 32px;
+}
+
+.landing-glow-orb {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    oklch(45% 0.2 260 / 0.22) 0%,
+    oklch(40% 0.2 295 / 0.12) 45%,
+    transparent 70%
+  );
+  animation: orb-pulse 7s ease-in-out infinite;
+}
+
+@keyframes orb-pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.landing-feature-card {
+  background: oklch(11% 0.03 260);
+  border: 1px solid oklch(22% 0.04 260);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.landing-feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(65% 0.22 262 / 0.6),
+    oklch(65% 0.22 295 / 0.6),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.landing-feature-card:hover {
+  border-color: oklch(35% 0.08 262);
+  box-shadow: 0 0 32px oklch(55% 0.22 262 / 0.1), 0 4px 24px oklch(0% 0 0 / 0.4);
+}
+
+.landing-feature-card:hover::before {
+  opacity: 1;
+}
+
+.landing-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, oklch(30% 0.1 262), oklch(28% 0.1 295));
+  border: 1px solid oklch(38% 0.1 262 / 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
 }

@@ -1,50 +1,11 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Cloud,
-  FileDown,
-  Filter,
-  FolderPlus,
-  Loader2,
-  Plus,
-  Search,
-  Upload,
-  X,
-} from "lucide-react";
+import { Cloud, Globe, Loader2, Shield, Zap } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
-import { Toaster, toast } from "sonner";
-import type { FileMetadata, TagId } from "./backend";
-import { Breadcrumb } from "./components/Breadcrumb";
-import { CreateFolderDialog } from "./components/CreateFolderDialog";
-import { FileList } from "./components/FileList";
-import { FilePreviewCard } from "./components/FilePreviewCard";
-import { Header } from "./components/Header";
-import { ProfileSetupDialog } from "./components/ProfileSetupDialog";
+import { Suspense, lazy } from "react";
 import { useActor } from "./hooks/useActor";
-import { useDebounce } from "./hooks/useDebounce";
-import { useFileUpload } from "./hooks/useFileUpload";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
-import {
-  useGetAllFiles,
-  useGetAllFolders,
-  useGetAllTags,
-  useGetFolderContents,
-  useGetFolderPath,
-  useProfile,
-  useSearchFilesWithTags,
-} from "./hooks/useQueries";
-import { exportMetadataAsCSV } from "./utils/exports";
+
+const AuthenticatedApp = lazy(() => import("./components/AuthenticatedApp"));
 
 export default function App() {
   const { identity, isInitializing, login, isLoggingIn } =
@@ -73,7 +34,94 @@ export default function App() {
     );
   }
 
-  return <AuthenticatedApp />;
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <AuthenticatedApp />
+    </Suspense>
+  );
+}
+
+const FEATURES = [
+  {
+    icon: Shield,
+    title: "Fully Secure",
+    description:
+      "End-to-end encryption backed by the cryptographic guarantees of the Internet Computer.",
+  },
+  {
+    icon: Globe,
+    title: "Decentralised",
+    description:
+      "No servers, no middlemen. Your data lives entirely on-chain, owned by you.",
+  },
+  {
+    icon: Zap,
+    title: "Always Available",
+    description:
+      "Access your files from anywhere, anytime — with no single point of failure.",
+  },
+];
+
+function SignInButton({
+  login,
+  isLoggingIn,
+  large,
+  ocid,
+}: {
+  login: () => void;
+  isLoggingIn: boolean;
+  large?: boolean;
+  ocid: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={login}
+      disabled={isLoggingIn}
+      data-ocid={ocid}
+      style={{
+        background: isLoggingIn
+          ? "oklch(25% 0.06 262)"
+          : "linear-gradient(135deg, oklch(55% 0.24 255), oklch(58% 0.26 295))",
+        boxShadow: isLoggingIn
+          ? "none"
+          : "0 0 32px oklch(55% 0.24 265 / 0.35), 0 4px 16px oklch(0% 0 0 / 0.4)",
+        transition: "all 0.25s ease",
+        cursor: isLoggingIn ? "not-allowed" : "pointer",
+        border: "none",
+        borderRadius: large ? "14px" : "10px",
+        padding: large ? "14px 32px" : "9px 20px",
+        fontSize: large ? "1.05rem" : "0.875rem",
+        fontWeight: 600,
+        color: "oklch(97% 0.005 260)",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "8px",
+        letterSpacing: "-0.01em",
+      }}
+    >
+      {isLoggingIn ? (
+        <>
+          <Loader2
+            style={{ width: large ? 18 : 15, height: large ? 18 : 15 }}
+            className="animate-spin"
+          />
+          Connecting…
+        </>
+      ) : (
+        <>
+          <Cloud style={{ width: large ? 18 : 15, height: large ? 18 : 15 }} />
+          Sign in with Internet Identity
+        </>
+      )}
+    </button>
+  );
 }
 
 function LandingPage({
@@ -84,83 +132,159 @@ function LandingPage({
   isLoggingIn: boolean;
 }) {
   return (
-    <main className="min-h-screen bg-white flex flex-col overflow-hidden relative">
-      {/* Background gradient blobs */}
+    <div
+      className="landing-dark min-h-screen flex flex-col overflow-x-hidden"
+      style={{ fontFamily: "var(--font-sans)" }}
+    >
+      {/* Dot grid overlay */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 overflow-hidden"
+        className="landing-dot-grid pointer-events-none fixed inset-0 z-0"
+      />
+
+      {/* ── Navbar ────────────────────────────────────────── */}
+      <header
+        className="relative z-20 w-full"
+        style={{
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          background: "oklch(8% 0.025 260 / 0.75)",
+          borderBottom: "1px solid oklch(22% 0.04 262 / 0.6)",
+        }}
       >
-        <div className="blob-1 absolute -top-32 -left-32 w-[min(500px,85vw)] h-[min(500px,85vw)] rounded-full blur-3xl" />
-        <div className="blob-2 absolute -top-16 right-0 w-[min(420px,75vw)] h-[min(420px,75vw)] rounded-full blur-3xl" />
-        <div className="blob-3 absolute bottom-0 left-1/2 -translate-x-1/2 w-[min(600px,90vw)] h-[min(400px,60vw)] rounded-full blur-3xl" />
-      </div>
-
-      {/* Navbar */}
-      <nav className="relative z-10 container mx-auto px-6 lg:px-8 py-6 flex items-center justify-between">
-        <motion.div
-          className="flex items-center gap-2.5"
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-sm">
-            <Cloud className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tight font-display text-foreground">
-            ICcloud
-          </span>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={login}
-            disabled={isLoggingIn}
-            data-ocid="nav.primary_button"
-            className="rounded-full border-border/60 text-foreground hover:bg-secondary font-medium px-5"
+        <nav className="max-w-6xl mx-auto px-6 lg:px-8 py-4 flex items-center justify-between">
+          <motion.div
+            className="flex items-center gap-2.5"
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            {isLoggingIn ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              "Sign in"
-            )}
-          </Button>
-        </motion.div>
-      </nav>
+            <div
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+                background:
+                  "linear-gradient(135deg, oklch(55% 0.24 255), oklch(58% 0.26 295))",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 0 14px oklch(55% 0.24 265 / 0.4)",
+              }}
+            >
+              <Cloud style={{ width: 17, height: 17, color: "white" }} />
+            </div>
+            <span
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: "1.2rem",
+                letterSpacing: "-0.02em",
+                color: "oklch(96% 0.008 260)",
+              }}
+            >
+              ICcloud
+            </span>
+          </motion.div>
 
-      {/* Hero */}
-      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 py-16 lg:py-24">
+          <motion.div
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <SignInButton
+              login={login}
+              isLoggingIn={isLoggingIn}
+              ocid="nav.primary_button"
+            />
+          </motion.div>
+        </nav>
+      </header>
+
+      {/* ── Hero ──────────────────────────────────────────── */}
+      <section className="relative z-10 flex flex-col items-center justify-center text-center min-h-[92vh] px-6 py-24">
+        {/* Glow orb */}
+        <div
+          aria-hidden="true"
+          className="landing-glow-orb pointer-events-none absolute inset-0"
+        />
+
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-5"
+          transition={{ duration: 0.55, delay: 0.1 }}
+          className="mb-6"
         >
-          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary bg-primary/8 border border-primary/15 px-4 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              fontSize: "0.72rem",
+              fontWeight: 600,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "oklch(72% 0.18 262)",
+              background: "oklch(22% 0.06 262 / 0.6)",
+              border: "1px solid oklch(40% 0.1 262 / 0.5)",
+              padding: "6px 16px",
+              borderRadius: 999,
+            }}
+          >
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: "oklch(65% 0.22 262)",
+                boxShadow: "0 0 8px oklch(65% 0.22 262 / 0.8)",
+                animation: "pulse 2s ease-in-out infinite",
+              }}
+            />
             On the Internet Computer
           </span>
         </motion.div>
 
         <motion.h1
-          className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.05] tracking-tight max-w-3xl"
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          transition={{ duration: 0.65, delay: 0.2 }}
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 800,
+            fontSize: "clamp(2.6rem, 8vw, 5.5rem)",
+            lineHeight: 1.06,
+            letterSpacing: "-0.03em",
+            color: "oklch(96% 0.008 260)",
+            maxWidth: 760,
+          }}
         >
-          Your files. <span className="text-gradient-cloud">Everywhere.</span>
+          <span className="text-gradient-cloud" style={{ display: "block" }}>
+            ICcloud
+          </span>
+          <span
+            style={{
+              display: "block",
+              fontSize: "0.75em",
+              fontWeight: 700,
+              color: "oklch(82% 0.01 260)",
+            }}
+          >
+            My Cloud. My Files
+          </span>
         </motion.h1>
 
         <motion.p
-          className="mt-6 text-lg text-muted-foreground max-w-md font-sans leading-relaxed"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35 }}
+          style={{
+            marginTop: "1.5rem",
+            fontSize: "1.1rem",
+            lineHeight: 1.7,
+            color: "oklch(62% 0.04 262)",
+            maxWidth: 480,
+          }}
         >
           Secure, decentralised cloud storage — built entirely on the Internet
           Computer.
@@ -170,363 +294,223 @@ function LandingPage({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-10"
+          style={{ marginTop: "2.5rem" }}
         >
-          <Button
-            size="lg"
-            onClick={login}
-            disabled={isLoggingIn}
-            data-ocid="hero.primary_button"
-            className="relative rounded-full px-8 py-6 text-base font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-0"
-            style={{
-              background:
-                "linear-gradient(135deg, oklch(52% 0.24 260), oklch(60% 0.25 300))",
-            }}
-          >
-            {isLoggingIn ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Connecting…
-              </>
-            ) : (
-              <>
-                <Cloud className="w-4 h-4 mr-2" />
-                Sign in with Internet Identity
-              </>
-            )}
-          </Button>
+          <SignInButton
+            login={login}
+            isLoggingIn={isLoggingIn}
+            large
+            ocid="hero.primary_button"
+          />
         </motion.div>
 
         <motion.p
-          className="mt-4 text-xs text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.65 }}
+          style={{
+            marginTop: "1rem",
+            fontSize: "0.78rem",
+            color: "oklch(45% 0.04 262)",
+          }}
         >
           No account needed — your identity lives on-chain.
         </motion.p>
+
+        {/* Scroll chevron hint */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.4 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          style={{
+            position: "absolute",
+            bottom: "2rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{
+              duration: 2,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+            style={{
+              width: 20,
+              height: 20,
+              borderRight: "2px solid oklch(50% 0.06 262)",
+              borderBottom: "2px solid oklch(50% 0.06 262)",
+              transform: "rotate(45deg)",
+            }}
+          />
+        </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 py-6 text-center">
-        <p className="text-xs text-muted-foreground">
+      {/* ── Features ──────────────────────────────────────── */}
+      <section className="relative z-10 py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-14"
+          >
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "oklch(60% 0.14 262)",
+                marginBottom: "0.75rem",
+              }}
+            >
+              Why ICcloud
+            </p>
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+                letterSpacing: "-0.025em",
+                color: "oklch(93% 0.008 260)",
+              }}
+            >
+              Built different. Built{" "}
+              <span className="text-gradient-cloud">on-chain.</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {FEATURES.map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                className="landing-feature-card p-7"
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.55, delay: i * 0.12 }}
+              >
+                <div className="landing-icon-wrap">
+                  <feature.icon
+                    style={{
+                      width: 22,
+                      height: 22,
+                      color: "oklch(70% 0.2 262)",
+                    }}
+                  />
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 700,
+                    fontSize: "1.1rem",
+                    letterSpacing: "-0.015em",
+                    color: "oklch(93% 0.008 260)",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  {feature.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: "0.9rem",
+                    lineHeight: 1.65,
+                    color: "oklch(55% 0.04 262)",
+                  }}
+                >
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Final CTA ─────────────────────────────────────── */}
+      <section className="relative z-10 py-28 px-6">
+        {/* Glow under CTA */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 55% at 50% 50%, oklch(38% 0.14 270 / 0.18), transparent 70%)",
+          }}
+        />
+        <motion.div
+          className="max-w-2xl mx-auto text-center relative"
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.65 }}
+        >
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 800,
+              fontSize: "clamp(2rem, 5vw, 3.4rem)",
+              letterSpacing: "-0.03em",
+              lineHeight: 1.1,
+              color: "oklch(95% 0.008 260)",
+              marginBottom: "1.25rem",
+            }}
+          >
+            Ready to get <span className="text-gradient-cloud">started?</span>
+          </h2>
+          <p
+            style={{
+              fontSize: "1rem",
+              lineHeight: 1.7,
+              color: "oklch(58% 0.04 262)",
+              marginBottom: "2rem",
+              maxWidth: 420,
+              margin: "0 auto 2rem",
+            }}
+          >
+            Join the decentralised storage revolution. Your files, secured by
+            the Internet Computer.
+          </p>
+          <SignInButton
+            login={login}
+            isLoggingIn={isLoggingIn}
+            large
+            ocid="cta.primary_button"
+          />
+        </motion.div>
+      </section>
+
+      {/* ── Footer ────────────────────────────────────────── */}
+      <footer
+        className="relative z-10 py-8 text-center"
+        style={{
+          borderTop: "1px solid oklch(18% 0.03 262)",
+        }}
+      >
+        <p
+          style={{
+            fontSize: "0.78rem",
+            color: "oklch(38% 0.03 262)",
+          }}
+        >
           © {new Date().getFullYear()}. Built with ❤️ using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-foreground transition-colors"
+            style={{
+              color: "oklch(55% 0.1 262)",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+              transition: "color 0.2s",
+            }}
           >
             caffeine.ai
           </a>
         </p>
       </footer>
-    </main>
-  );
-}
-
-function AuthenticatedApp() {
-  const {
-    data: profile,
-    isLoading: isLoadingProfile,
-    isError: isProfileError,
-    error: profileError,
-  } = useProfile();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTagIds, setSelectedTagIds] = useState<TagId[]>([]);
-  const [showCreateFolder, setShowCreateFolder] = useState(false);
-  const [currentFolderId, setCurrentFolderId] = useState<bigint | null>(null);
-  const [selectedFile, setSelectedFile] = useState<FileMetadata | null>(null);
-
-  const { triggerUpload, FileInput } = useFileUpload(currentFolderId);
-
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
-
-  const {
-    data: folderContents,
-    isLoading: isLoadingContents,
-    isError: isContentsError,
-    error: contentsError,
-  } = useGetFolderContents(currentFolderId);
-  const { data: folderPath = [] } = useGetFolderPath(currentFolderId);
-  const {
-    data: allTags = [],
-    isError: isTagsError,
-    error: tagsError,
-  } = useGetAllTags();
-  const {
-    data: allFiles = [],
-    isError: isFilesError,
-    error: filesError,
-  } = useGetAllFiles();
-  const {
-    data: allFolders = [],
-    isError: isFoldersError,
-    error: foldersError,
-  } = useGetAllFolders();
-
-  if (isProfileError) console.error("Profile error:", profileError);
-  if (isContentsError) console.error("Contents error:", contentsError);
-  if (isTagsError) console.error("Tags error:", tagsError);
-  if (isFilesError) console.error("Files error:", filesError);
-  if (isFoldersError) console.error("Folders error:", foldersError);
-
-  const isFiltering =
-    debouncedSearchQuery.trim() !== "" || selectedTagIds.length > 0;
-  const {
-    data: filteredResults,
-    isLoading: isSearching,
-    isError: isSearchError,
-  } = useSearchFilesWithTags(debouncedSearchQuery, selectedTagIds);
-
-  const hasProfile = profile?.name;
-
-  const displayedFiles = isFiltering
-    ? (filteredResults ?? [])
-    : (folderContents?.files ?? []);
-  const displayedFolders = isFiltering ? [] : (folderContents?.folders ?? []);
-
-  const toggleTagFilter = (tagId: TagId) => {
-    setSelectedTagIds((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId],
-    );
-  };
-
-  const clearFilters = () => {
-    setSearchQuery("");
-    setSelectedTagIds([]);
-  };
-
-  const handleOpenFolder = (folderId: bigint) => {
-    setCurrentFolderId(folderId);
-    setSelectedFile(null);
-  };
-
-  const handleNavigate = (folderId: bigint | null) => {
-    setCurrentFolderId(folderId);
-    setSelectedFile(null);
-  };
-
-  const handleExportCSV = () => {
-    try {
-      exportMetadataAsCSV({
-        files: allFiles,
-        folders: allFolders,
-        tags: allTags,
-      });
-      toast.success("Metadata exported as CSV");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to export CSV",
-      );
-    }
-  };
-
-  if (isLoadingProfile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const hasDataError =
-    isProfileError ||
-    isContentsError ||
-    isTagsError ||
-    isFilesError ||
-    isFoldersError;
-
-  if (hasDataError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-destructive text-center">
-          <p>Failed to load data. Please refresh.</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <ProfileSetupDialog open={!hasProfile} />
-      {hasProfile && (
-        <div className="min-h-screen bg-background flex flex-col">
-          <Header userName={profile.name} />
-          <main className="flex-1 p-4">
-            {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-2 mb-4">
-              <div className="relative w-full sm:flex-1 sm:max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search files..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
-                  data-ocid="toolbar.search_input"
-                />
-              </div>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    data-ocid="toolbar.filter.toggle"
-                  >
-                    <Filter className="h-4 w-4" />
-                    <span className="hidden sm:inline">Tags</span>
-                    {selectedTagIds.length > 0 && (
-                      <Badge variant="secondary" className="ml-1 h-5 px-1.5">
-                        {selectedTagIds.length}
-                      </Badge>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
-                  <DropdownMenuLabel>Filter by Tag</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {allTags.length === 0 ? (
-                    <div className="px-2 py-3 text-sm text-muted-foreground text-center">
-                      No tags yet
-                    </div>
-                  ) : (
-                    allTags.map((tag) => (
-                      <DropdownMenuCheckboxItem
-                        key={tag.id}
-                        checked={selectedTagIds.includes(tag.id)}
-                        onCheckedChange={() => toggleTagFilter(tag.id)}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: tag.color }}
-                          />
-                          {tag.name}
-                        </div>
-                      </DropdownMenuCheckboxItem>
-                    ))
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button
-                variant="outline"
-                onClick={handleExportCSV}
-                className="gap-2"
-                data-ocid="toolbar.secondary_button"
-              >
-                <FileDown className="h-4 w-4" />
-                <span className="hidden sm:inline">Export CSV</span>
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="gap-2" data-ocid="toolbar.primary_button">
-                    <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">New</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setShowCreateFolder(true)}>
-                    <FolderPlus className="h-4 w-4" />
-                    New Folder
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={triggerUpload}>
-                    <Upload className="h-4 w-4" />
-                    Upload File
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            {/* Active filters indicator */}
-            {isFiltering && (
-              <div className="flex items-center gap-2 mb-4 flex-wrap">
-                <span className="text-sm text-muted-foreground">
-                  Filtering:
-                </span>
-                {searchQuery && (
-                  <Badge variant="secondary" className="gap-1">
-                    Search: &quot;{searchQuery}&quot;
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="ml-1 hover:bg-muted rounded-full"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {selectedTagIds.map((tagId) => {
-                  const tag = allTags.find((t) => t.id === tagId);
-                  if (!tag) return null;
-                  return (
-                    <Badge
-                      key={tagId}
-                      style={{ backgroundColor: tag.color, color: "#fff" }}
-                      className="gap-1"
-                    >
-                      {tag.name}
-                      <button
-                        type="button"
-                        onClick={() => toggleTagFilter(tagId)}
-                        className="ml-1 hover:bg-black/20 rounded-full"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  );
-                })}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="h-6 px-2 text-xs"
-                >
-                  Clear all
-                </Button>
-              </div>
-            )}
-
-            <div className="mb-4 overflow-x-auto">
-              <Breadcrumb path={folderPath} onNavigate={handleNavigate} />
-            </div>
-
-            <FileInput />
-
-            <div className="bg-card border border-border rounded-lg overflow-hidden">
-              {isSearchError ? (
-                <div
-                  className="text-destructive p-4 text-center"
-                  data-ocid="files.error_state"
-                >
-                  Failed to search files. Please try again.
-                </div>
-              ) : (
-                <FileList
-                  folders={displayedFolders}
-                  files={displayedFiles}
-                  isLoading={isLoadingContents || isSearching}
-                  selectedFile={selectedFile}
-                  onSelectFile={setSelectedFile}
-                  onOpenFolder={handleOpenFolder}
-                />
-              )}
-            </div>
-          </main>
-        </div>
-      )}
-
-      <CreateFolderDialog
-        open={showCreateFolder}
-        onOpenChange={setShowCreateFolder}
-        parentFolderId={currentFolderId}
-      />
-      <Toaster position="bottom-right" />
-    </>
+    </div>
   );
 }
